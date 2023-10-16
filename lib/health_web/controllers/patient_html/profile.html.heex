@@ -1,0 +1,71 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+
+<body>
+  <div class="patient-info">
+    <h1 class="info-heading">Patient Information</h1>
+    <div class="info-grid">
+      <div>
+        <p class="info-label">Name:</p>
+        <p>
+          <%= @current_patient.first_name %>
+            <%= @current_patient.middle_name %>
+              <%= @current_patient.last_name %>
+        </p>
+      </div>
+      <div>
+        <p class="info-label">Gender:</p>
+        <p>
+          <%= @current_patient.gender %>
+        </p>
+      </div>
+      <div>
+        <p class="info-label">Date of Birth:</p>
+        <p>
+          <%= @current_patient.date_of_birth %>
+        </p>
+      </div>
+      <div>
+        <p class="info-label">Allergies:</p>
+        <p>
+          <%= @current_patient.allergies %>
+        </p>
+      </div>
+      <div>
+        <p class="info-label">Notes:</p>
+        <p>
+          <%= @current_patient.notes %>
+        </p>
+      </div>
+      <div>
+        <p class="info-label">Phone:</p>
+        <a href="tel:{@current_patient.phone_number}">
+          <%= @current_patient.phone_number %>
+        </a>
+      </div>
+      <div>
+        <p class="info-label">Email:</p>
+        <a href="mailto:{@current_patient.email}">
+          <%= @current_patient.email %>
+        </a>
+      </div>
+    </div>
+    <div>
+      <p class="info-label">Age:</p>
+      <p>
+        <%= calculate_age(@current_patient.date_of_birth) %>
+      </p>
+    </div>
+    <div class="info-bmi">
+      <p class="info-label">BMI:</p>
+      <p>
+        <%= calculate_bmi(@current_patient.weight, @current_patient.height) %>
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>

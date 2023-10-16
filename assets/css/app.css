@@ -3,3 +3,54 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+/* style.css */
+
+/* Body styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container styles */
+.patient-info {
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+/* Heading styles */
+.info-heading {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Grid styles */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+}
+
+/* Label styles */
+.info-label {
+  font-weight: bold;
+}
+
+/* Link styles */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Age and BMI styles */
+.info-bmi, .info-label {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Additional styling can be added as needed */

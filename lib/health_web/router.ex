@@ -23,6 +23,12 @@ defmodule HealthWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/", HealthWeb do
+    pipe_through [:browser, :require_authenticated_patient]
+
+    get "/patient/profile", PatientController, :profile
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", HealthWeb do
   #   pipe_through :api

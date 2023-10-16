@@ -13,6 +13,10 @@ defmodule Health.Accounts.Patient do
     field :phone_number, :string
     field :date_of_birth, :date
     field :gender, :string, default: "male"
+    field :allergies, :string
+    field :notes, :string
+    field :weight, :float
+    field :height, :float
     field :confirmed_at, :naive_datetime
 
     timestamps()
@@ -43,7 +47,7 @@ defmodule Health.Accounts.Patient do
   """
   def registration_changeset(patient, attrs, opts \\ []) do
     patient
-    |> cast(attrs, [:email, :password, :first_name, :middle_name, :last_name, :username, :phone_number, :date_of_birth, :gender])
+    |> cast(attrs, [:email, :password, :first_name, :middle_name, :last_name, :username, :phone_number, :date_of_birth, :gender, :allergies, :notes, :weight, :height])
     |> validate_email(opts)
     |> validate_password(opts)
     |> validate_first_name(opts)
@@ -53,6 +57,30 @@ defmodule Health.Accounts.Patient do
     |> validate_phone_number(opts)
     |> validate_gender(opts)
     |> validate_date_of_birth(opts)
+    |> validate_allergies(opts)
+    |> validate_notes(opts)
+    |> validate_weight(opts)
+    |> validate_height(opts)
+  end
+
+  defp validate_weight(changeset, _opts) do
+    changeset
+    |> validate_required([:weight])
+  end
+
+  defp validate_height(changeset, _opts) do
+    changeset
+    |> validate_required([:height])
+  end
+
+  defp validate_allergies(changeset, _opts) do
+    changeset
+    |> validate_required([:allergies])
+  end
+
+  defp validate_notes(changeset, _opts) do
+    changeset
+    |> validate_required([:notes])
   end
 
   defp validate_first_name(changeset, _opts) do
