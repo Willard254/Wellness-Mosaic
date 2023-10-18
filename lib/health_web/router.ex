@@ -74,6 +74,9 @@ defmodule HealthWeb.Router do
       on_mount: [{HealthWeb.PatientAuth, :ensure_authenticated}] do
       live "/patients/settings", PatientSettingsLive, :edit
       live "/patients/settings/confirm_email/:token", PatientSettingsLive, :confirm_email
+      live "/patients/settings/confirm_phone_number/:token", PatientSettingsLive, :confirm_phone_number
+      live "/patients/settings/confirm_weight/:token", PatientSettingsLive, :confirm_weight
+      live "/patients/settings/confirm_height/:token", PatientSettingsLive, :confirm_height
     end
   end
 

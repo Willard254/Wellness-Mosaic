@@ -108,6 +108,10 @@ defmodule Health.Accounts do
     Patient.email_changeset(patient, attrs, validate_email: false)
   end
 
+  def change_patient_phone_number(patient, attrs \\ %{}) do
+    Patient.phone_number_changeset(patient, attrs, validate_phone_number: false)
+  end
+
   @doc """
   Emulates that the email will change without actually changing
   it in the database.
@@ -124,6 +128,13 @@ defmodule Health.Accounts do
   def apply_patient_email(patient, password, attrs) do
     patient
     |> Patient.email_changeset(attrs)
+    |> Patient.validate_current_password(password)
+    |> Ecto.Changeset.apply_action(:update)
+  end
+
+  def apply_patient_phone_number(patient, password, attrs) do
+    patient
+    |> Patient.phone_number_changeset(attrs)
     |> Patient.validate_current_password(password)
     |> Ecto.Changeset.apply_action(:update)
   end
@@ -146,6 +157,18 @@ defmodule Health.Accounts do
     end
   end
 
+  def update_patient_phone_number(patient, token) do
+    context = "change:#{patient.phone_number}"
+
+    with {:ok, query} <- PatientToken.verify_change_phone_number_token_query(token, context),
+      %PatientToken{sent_to: phone_number} <- Repo.one(query),
+      {:ok, _} <- Repo.transaction(patient_phone_number_multi(patient, phone_number, context)) do
+        :ok
+      else
+        _ -> :error
+      end
+  end
+
   defp patient_email_multi(patient, email, context) do
     changeset =
       patient
@@ -157,8 +180,19 @@ defmodule Health.Accounts do
     |> Ecto.Multi.delete_all(:tokens, PatientToken.patient_and_contexts_query(patient, [context]))
   end
 
+  defp patient_phone_number_multi(patient, phone_number, context) do
+    changeset =
+      patient
+      |> Patient.phone_number_changeset(%{phone_number: phone_number})
+      |> Patient.confirm_changeset()
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:patient, changeset)
+    |> Ecto.Multi.delete_all(:tokens, PatientToken.patient_and_contexts_query(patient, [context]))
+  end
+
   @doc ~S"""
-  Delivers the update email instructions to the given patient.
+  Delivers the update instructions to the given patient.
 
   ## Examples
 
@@ -172,6 +206,14 @@ defmodule Health.Accounts do
 
     Repo.insert!(patient_token)
     PatientNotifier.deliver_update_email_instructions(patient, update_email_url_fun.(encoded_token))
+  end
+
+  def deliver_patient_update_phone_number_instructions(%Patient{} = patient, current_phone_number, update_phone_number_url_fun)
+      when is_function(update_phone_number_url_fun, 1) do
+    {encoded_token, patient_token} = PatientToken.build_phone_number_token(patient, "change:#{current_phone_number}")
+
+    Repo.insert!(patient_token)
+    PatientNotifier.deliver_update_phone_number_instructions(patient, update_phone_number_url_fun.(encoded_token))
   end
 
   @doc """
@@ -262,6 +304,17 @@ defmodule Health.Accounts do
       {:error, :already_confirmed}
     else
       {encoded_token, patient_token} = PatientToken.build_email_token(patient, "confirm")
+      Repo.insert!(patient_token)
+      PatientNotifier.deliver_confirmation_instructions(patient, confirmation_url_fun.(encoded_token))
+    end
+  end
+
+  def deliver_patient_phone_number_confirmation_instructions(%Patient{} = patient, confirmation_url_fun)
+      when is_function(confirmation_url_fun, 1) do
+    if patient.confirmed_at do
+      {:error, :already_confirmed}
+    else
+      {encoded_token, patient_token} = PatientToken.build_phone_number_token(patient, "confirm")
       Repo.insert!(patient_token)
       PatientNotifier.deliver_confirmation_instructions(patient, confirmation_url_fun.(encoded_token))
     end

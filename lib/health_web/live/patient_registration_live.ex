@@ -37,12 +37,9 @@ defmodule HealthWeb.PatientRegistrationLive do
         <.input field={@form[:last_name]} type="text" label="Last Name" required />
         <.input field={@form[:username]} type="text" label="Username" required />
         <.input field={@form[:date_of_birth]} type="date" label="Date of Birth" required />
-        <.input field={@form[:weight]} type="number" label="Weight(in kgs)" required />
-        <.input field={@form[:height]} type="number" label="Height(in metres)" required />
-        <.input field={@form[:phone_number]} type="text" label="Phone Number" required />
         <.input field={@form[:gender]} type="text" label="Gender" required />
-        <.input field={@form[:allergies]} type="text" label="Allergies" required />
-        <.input field={@form[:notes]} type="text" label="Notes" required />
+        <.input field={@form[:phone_number]} type="text" label="Phone Number" required />
+        <.input field={@form[:national_id]} type="number" label="National ID" required />
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
 

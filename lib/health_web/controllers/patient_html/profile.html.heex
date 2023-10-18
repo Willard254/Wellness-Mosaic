@@ -29,15 +29,9 @@
         </p>
       </div>
       <div>
-        <p class="info-label">Allergies:</p>
+        <p class="info-label">National ID:</p>
         <p>
-          <%= @current_patient.allergies %>
-        </p>
-      </div>
-      <div>
-        <p class="info-label">Notes:</p>
-        <p>
-          <%= @current_patient.notes %>
+          <%= @current_patient.national_id %>
         </p>
       </div>
       <div>
@@ -57,12 +51,6 @@
       <p class="info-label">Age:</p>
       <p>
         <%= calculate_age(@current_patient.date_of_birth) %>
-      </p>
-    </div>
-    <div class="info-bmi">
-      <p class="info-label">BMI:</p>
-      <p>
-        <%= calculate_bmi(@current_patient.weight, @current_patient.height) %>
       </p>
     </div>
   </div>

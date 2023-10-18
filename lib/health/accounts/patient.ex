@@ -2,6 +2,8 @@ defmodule Health.Accounts.Patient do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @field [:email, :password, :first_name, :middle_name, :last_name, :username, :phone_number, :date_of_birth, :gender, :national_id]
+
   schema "patients" do
     field :email, :string
     field :password, :string, virtual: true, redact: true
@@ -12,11 +14,8 @@ defmodule Health.Accounts.Patient do
     field :username, :string
     field :phone_number, :string
     field :date_of_birth, :date
-    field :gender, :string, default: "male"
-    field :allergies, :string
-    field :notes, :string
-    field :weight, :float
-    field :height, :float
+    field :gender, :string
+    field :national_id, :integer
     field :confirmed_at, :naive_datetime
 
     timestamps()
@@ -47,7 +46,7 @@ defmodule Health.Accounts.Patient do
   """
   def registration_changeset(patient, attrs, opts \\ []) do
     patient
-    |> cast(attrs, [:email, :password, :first_name, :middle_name, :last_name, :username, :phone_number, :date_of_birth, :gender, :allergies, :notes, :weight, :height])
+    |> cast(attrs, @field)
     |> validate_email(opts)
     |> validate_password(opts)
     |> validate_first_name(opts)
@@ -57,30 +56,14 @@ defmodule Health.Accounts.Patient do
     |> validate_phone_number(opts)
     |> validate_gender(opts)
     |> validate_date_of_birth(opts)
-    |> validate_allergies(opts)
-    |> validate_notes(opts)
-    |> validate_weight(opts)
-    |> validate_height(opts)
+    |> validate_national_id(opts)
   end
 
-  defp validate_weight(changeset, _opts) do
+  defp validate_national_id(changeset, opts) do
     changeset
-    |> validate_required([:weight])
-  end
-
-  defp validate_height(changeset, _opts) do
-    changeset
-    |> validate_required([:height])
-  end
-
-  defp validate_allergies(changeset, _opts) do
-    changeset
-    |> validate_required([:allergies])
-  end
-
-  defp validate_notes(changeset, _opts) do
-    changeset
-    |> validate_required([:notes])
+    |> validate_required([:national_id])
+    # |> validate_length(:national_id, max: 8)
+    |> maybe_validate_unique_national_id(opts)
   end
 
   defp validate_first_name(changeset, _opts) do
@@ -112,7 +95,7 @@ defmodule Health.Accounts.Patient do
   defp validate_gender(changeset, _opts) do
     changeset
     |> validate_required([:gender])
-    |> validate_inclusion(:gender, ["male", "female"], message: "Invalid gender")
+    |> validate_inclusion(:gender, ["male", "female", "rather not say"], message: "Invalid Input")
   end
 
   defp validate_phone_number(changeset, opts) do
@@ -188,6 +171,16 @@ defmodule Health.Accounts.Patient do
     end
   end
 
+  defp maybe_validate_unique_national_id(changeset, opts) do
+    if Keyword.get(opts, :validate_national_id, true) do
+      changeset
+      |> unsafe_validate_unique(:national_id, Health.Repo)
+      |> unique_constraint(:national_id)
+    else
+      changeset
+    end
+  end
+
   @doc """
   A patient changeset for changing the email.
 
@@ -203,6 +196,16 @@ defmodule Health.Accounts.Patient do
     end
   end
 
+  def phone_number_changeset(patient, attrs, opts \\ []) do
+    patient
+    |> cast(attrs, [:phone_number])
+    |> validate_email(opts)
+    |> case do
+      %{changes: %{phone_number: _}} = changeset -> changeset
+      %{} = changeset -> add_error(changeset, :phone_number, "did not change")
+    end
+  end
+  
   @doc """
   A patient changeset for changing the password.
 

@@ -76,4 +76,24 @@ defmodule Health.Accounts.PatientNotifier do
     ==============================
     """)
   end
+
+  @doc """
+  Deliver instructions to update a patient email.
+  """
+  def deliver_update_phone_number_instructions(patient, url) do
+    deliver(patient.email, "Update Phone Number instructions", """
+
+    ==============================
+
+    Hi #{patient.first_name},
+
+    You can change your phone number by visiting the URL below:
+
+    #{url}
+
+    If you didn't request this change, please ignore this.
+
+    ==============================
+    """)
+  end
 end
